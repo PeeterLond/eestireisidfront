@@ -1,18 +1,38 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="home-master">
+    <div>
+      <h2>Tere tulemast Reisi Eestis kodulehele.</h2>
+    </div>
+    <div>
+      <label class="me-3" for="from">Lähtekoht</label>
+      <input v-model="from" class="me-5" type="text" id="from">
+      <label class="me-3" for="to">Sihtkoht</label>
+      <input v-model="to" type="text" id="to">
+
+    </div>
+    <div>
+      <button @click="goToSearchView" class="btn btn-dark">Otsi reise</button>
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+
+import router from "@/router";
 
 export default {
   name: 'HomeView',
-  components: {
-    HelloWorld
+  data() {
+    return {
+      from: '',
+      to: ''
+    }
+  },
+  methods: {
+    goToSearchView() {
+      router.push({name: 'searchRoute'})
+    },
+
   }
 }
 </script>

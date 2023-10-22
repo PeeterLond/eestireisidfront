@@ -1,30 +1,26 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div class="master">
+    <header>
+      <h1 @click="goToHome" >Eesti Reisid</h1>
+      <div>
+        <button class="btn btn-dark">Logi sisse</button>
+      </div>
+    </header>
+    <main>
+      <router-view></router-view>
+    </main>
+  </div>
+
 </template>
+<script>
+import router from "@/router";
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+export default {
+  methods: {
+    goToHome() {
+      router.push({name: 'homeRoute'})
+    },
+  }
 }
 
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+</script>
