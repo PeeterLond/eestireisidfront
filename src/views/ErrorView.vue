@@ -1,6 +1,6 @@
 <template>
 
-  <h2>Nüüd läks küll mdiagi valesti :(</h2>
+  <h2>Nüüd läks küll midagi valesti :(</h2>
 
 </template>
 

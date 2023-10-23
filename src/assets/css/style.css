@@ -32,5 +32,23 @@
     align-items: center;
 }
 
+.search-master {
+    display: flex;
+    justify-content: space-around;
+    height: 90%;
+    width: 100%;
+}
+
+.alert-master {
+    display: flex;
+    justify-content: center;
+}
+
+.my-modal-footer {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+}
+
 
 
