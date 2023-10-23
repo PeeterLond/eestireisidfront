@@ -6,13 +6,14 @@
 
 .master > header {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     height: 10%;
     align-items: center;
 }
 
 .master > header > h1 {
     cursor: pointer;
+    margin-left: 40%;
 }
 
 .master > main {
@@ -22,21 +23,38 @@
     height: 100%;
     align-items: center;
     border: 1px solid black;
+    background-image: url("@/assets/images/background.jpg");
+    background-size: cover;
+    background-position: center;
 }
 
 .home-master {
     display: flex;
     flex-direction: column;
     height: 100%;
-    justify-content: space-evenly;
+    justify-content: space-around;
     align-items: center;
+}
+
+.home-item {
+    margin-bottom: 30%;
 }
 
 .search-master {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     height: 90%;
     width: 100%;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    margin-left: 4%;
+}
+
+.search-item {
+    margin-right: 25%;
 }
 
 .alert-master {
@@ -49,6 +67,3 @@
     flex: 1;
     justify-content: space-between;
 }
-
-
-

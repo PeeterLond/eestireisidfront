@@ -1,8 +1,12 @@
 <template>
   <BookingModal @event-booking-added="updateSuccessMessage" ref="bookingModalRef"></BookingModal>
   <div class="search-master">
-    <div>
-      filtreerimine
+    <div class="filter-item">
+      <p>Filter1</p>
+      <p>Filter2</p>
+      <p>Filter3</p>
+      <p>Filter4</p>
+      <button class="btn btn-dark">Filtreeri</button>
     </div>
     <div class="search-item">
       <div>
@@ -10,12 +14,12 @@
         <input v-model="fromCity" class="me-5" type="text" id="from">
         <label class="me-3" for="to">Sihtkoht</label>
         <input class="me-5" v-model="toCity" type="text" id="to">
-        <button @click="searchSchedule" class="btn btn-dark">Otsi reise</button>
+        <button @click="handleSearch" class="btn btn-dark">Otsi reise</button>
       </div>
-      <div>
+      <div class="mt-5">
         <AlertDanger :alert-message="errorResponse.message"></AlertDanger>
         <AlertSuccess :alert-message="successMessage"></AlertSuccess>
-        <table v-if="scheduleExists" class="table table-bordered">
+        <table class="table table-bordered table-hover">
           <thead>
             <tr>
               <th>Marsuut</th>
@@ -50,6 +54,7 @@ import router from "@/router";
 import AlertDanger from "@/components/alert/AlertDanger.vue";
 import BookingModal from "@/components/modal/BookingModal.vue";
 import AlertSuccess from "@/components/alert/AlertSuccess.vue";
+import {useRoute} from "vue-router";
 
 export default {
   name: "SearchView",
@@ -58,7 +63,6 @@ export default {
     return {
       fromCity: '',
       toCity: '',
-      scheduleExists: false,
       successMessage: '',
       searchResponse: {
         fromCityName: '',
@@ -84,11 +88,40 @@ export default {
     updateSuccessMessage() {
       this.successMessage= 'Reis broneeritud'
     },
-    openBookingModal(fromCityName, toCityName, schedule) {
-      this.$refs.bookingModalRef.$refs.modalRef.openModal();
-      this.$refs.bookingModalRef.fromCityName = fromCityName;
-      this.$refs.bookingModalRef.toCityName = toCityName;
-      this.$refs.bookingModalRef.schedule = schedule;
+
+    handleSearch() {
+      this.resetAlertMessages();
+      if (!this.mandatoryFieldsAreFilled()) {
+        this.errorResponse.message = 'Täida kõik väljad'
+      } else {
+        this.searchSchedule()
+      }
+    },
+
+    resetAlertMessages() {
+      this.errorResponse.message = '';
+      this.successMessage = '';
+    },
+
+    mandatoryFieldsAreFilled() {
+      return this.fromCity.length > 0 && this.toCity.length > 0
+    },
+
+    searchSchedule() {
+      this.$http.get("/search", {
+            params: {
+              fromCity: this.fromCity,
+              toCity: this.toCity
+            }
+          }
+      ).then(response => {
+        this.searchResponse = response.data;
+      }).catch(error => {
+        this.errorResponse = error.response.data;
+        if (this.errorResponse.errorCode !== 111) {
+          router.push({name: 'errorRoute'})
+        }
+      })
     },
 
     getTimeFromTimestamp(fromTime, endTime) {
@@ -98,37 +131,23 @@ export default {
 
     },
 
-    searchSchedule() {
-      this.resetAlertMessages();
-      this.$http.get("/search", {
-            params: {
-              fromCity: this.fromCity,
-              toCity: this.toCity
-            }
-          }
-      ).then(response => {
-        this.searchResponse = response.data;
-        this.scheduleExists = true;
-      }).catch(error => {
-        this.errorResponse = error.response.data;
-        if (this.errorResponse.errorCode !== 111) {
-          router.push({name: 'errorRoute'})
-        }
-      })
+    openBookingModal(fromCityName, toCityName, schedule) {
+      this.$refs.bookingModalRef.$refs.modalRef.openModal();
+      this.$refs.bookingModalRef.fromCityName = fromCityName;
+      this.$refs.bookingModalRef.toCityName = toCityName;
+      this.$refs.bookingModalRef.schedule = schedule;
     },
 
-    resetAlertMessages() {
-      this.errorResponse.message = '';
-      this.successMessage = '';
-    },
-    checkIfScheduleExists() {
-      if (this.searchResponse.length > 0) {
-        this.scheduleExists = true;
+    checkIfQueryParamsExists() {
+      if ((useRoute().query.from).length > 0) {
+        this.fromCity = useRoute().query.from;
+        this.toCity = useRoute().query.to;
+        this.searchSchedule();
       }
-    }
+    },
   },
   beforeMount() {
-    this.checkIfScheduleExists();
+    this.checkIfQueryParamsExists();
   }
 }
 </script>

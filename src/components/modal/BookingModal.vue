@@ -4,6 +4,7 @@
       <h2>Broneeri reis</h2>
     </template>
     <template #body>
+      <AlertDanger :alert-message="errorResponse.message"></AlertDanger>
       <h3>{{ `${fromCityName} - ${toCityName}` }}</h3>
       <h4>{{ getTimeFromTimestamp() }}</h4>
       <h4>{{ `${schedule.price}€, ${schedule.companyName}` }}</h4>
@@ -27,21 +28,20 @@
     <template #footer>
       <div class="my-modal-footer">
         <button @click="closeModal" class="btn btn-dark">Tagasi</button>
-        <button @click="addBooking" class="btn btn-dark">Kinnita</button>
+        <button @click="handleBooking" class="btn btn-dark">Kinnita</button>
       </div>
     </template>
-
   </Modal>
-
 </template>
 
 <script>
 import Modal from "@/components/modal/Modal.vue";
 import router from "@/router";
+import AlertDanger from "@/components/alert/AlertDanger.vue";
 
 export default {
   name: 'BookingModal',
-  components: {Modal},
+  components: {AlertDanger, Modal},
   data() {
     return {
       fromCityName: '',
@@ -57,30 +57,54 @@ export default {
         scheduleId: '',
         firstName: '',
         lastName: ''
+      },
+      errorResponse: {
+        message: '',
+        errorCode: 0
       }
-
     }
   },
   methods: {
     getTimeFromTimestamp() {
       let fromDate = new Date(this.schedule.startTimeDateTime);
       let endDate = new Date(this.schedule.endTimeDateTime);
-      return `${fromDate.getUTCHours()}:${fromDate.getUTCMinutes()}-${endDate.getUTCHours()}:${endDate.getUTCMinutes()}`
+      return `${fromDate.getUTCHours()}:${fromDate.getUTCMinutes()}-${endDate.getUTCHours()}:${endDate.getUTCMinutes()}`;
     },
 
     closeModal() {
-      this.$refs.modalRef.closeModal()
+      this.$refs.modalRef.closeModal();
+    },
+
+    handleBooking() {
+      this.resetErrorMessage();
+      if (!this.mandatoryFieldsFilled()) {
+        this.errorResponse.message = 'Täida kohustuslikud väljad';
+      }
+      else {
+        this.addBooking();
+      }
+    },
+
+    resetErrorMessage() {
+      this.errorResponse.message = '';
+    },
+
+    mandatoryFieldsFilled() {
+      return this.bookingRequest.firstName.length > 0 && this.bookingRequest.lastName.length > 0;
     },
 
     addBooking() {
       this.setBookingRequestScheduleId();
       this.$http.post("/booking", this.bookingRequest
       ).then(response => {
-        const responseBody = response.data
-        this.closeModal()
-        this.$emit("event-booking-added")
+        const responseBody = response.data;
+        this.closeModal();
+        this.$emit("event-booking-added");
       }).catch(error => {
-        router.push({name: 'errorRoute'})
+        this.errorResponse = error.response.data;
+        if (this.errorResponse.errorCode !== 222) {
+          router.push({name: 'errorRoute'});
+        }
       })
     },
 

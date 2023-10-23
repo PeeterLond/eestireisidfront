@@ -3,7 +3,7 @@
     <header>
       <h1 @click="goToHome" >Eesti Reisid</h1>
       <div>
-        <button class="btn btn-dark">Logi sisse</button>
+        <button class="btn btn-dark me-5">Logi sisse</button>
       </div>
     </header>
     <main>
